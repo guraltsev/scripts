@@ -1,0 +1,42 @@
+#!/bin/sh
+# Some helper functions
+
+get_systemd_service_PID () {
+    # Echoes MainPID obtained of .service from systemd (via systemctl)
+    #
+    # Paramteres: $1 - service name (with .service)
+    #
+    # Output: the PID
+    # Exit value: ?
+    
+    MAINPIDREGEXP="^\s*MainPID\s*=\s*"
+    systemctl show $1 | grep -oE "$MAINPIDREGEXP.*" | sed "s|$MAINPIDREGEXP||"
+}
+
+check_pid_state () {
+    # Echoes ps stat string for PID if it exists
+    #
+    # Parameters: $1 - PID 
+    #
+    # Output: stat string for PID
+    # Exit value: 0 if process exists
+    #             1 if process doesn't exist
+    if [ "$1" = "0" -o "$1" = "" ] ;
+    then
+	return 1
+    else
+	ps h -o stat= "$1" 2> /dev/null
+    fi
+}
+
+var_default (){
+    local VALUE
+    VALUE=$(eval echo \$$1)
+    echo $VALUE
+    if [ "$VALUE" = "" ];
+    then
+     	#echo undefined
+	eval $1=\"$2\"
+	#eval echo redefined $1=\$$1
+    fi
+}

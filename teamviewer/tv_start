@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Autostarts Teamviewer daemon if not already started before launching TeamViewer 
+
+# helperfuncts should be findable in $PATH 
+. helperfuncts
+
+var_default SUDO_PROG kdesudo
+
+
+ case $1 in
+     --help)
+	 echo "Autostarts Teamviewer daemon if not already started before launching TeamViewer"
+	 echo "tv_start [-no-daemon-autostart] [teamviewer-parameters]"
+	 ;;
+     -no-deamon-autostart)
+	 shift
+ 	 teamviewer $@
+	 ;;
+     daemon)
+	 $SUDO_PROG teamviewer $@
+	 ;;
+
+     *)
+	 PID=$(get_systemd_service_PID teamviewerd.service)
+	 if check_pid_state $PID > /dev/null
+	 then
+	     echo "TV deamon alive..."
+	     echo "Starting TeamViewer"
+	     teamviewer $@
+	 else
+	     echo "TV deamon dead..."
+	     echo "Starting TV daemon..."
+	     logger "Starting TV daemon"
+	     $SUDO_PROG teamviewer daemon start
+	     echo "...TV daemon started"
+	     echo "Starting TeamViewer"
+	     teamviewer $@
+	     echo "Stopping TV daemon..."
+	     logger "Stopping TV daemon"
+	     $SUDO_PROG teamviewer daemon stop
+	 fi
+	 ;;
+ esac

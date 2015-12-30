@@ -1,0 +1,10 @@
+# Written by Gennady Uraltsev
+# Allows executing running teamviewer daemon start and stop commands
+# without password for users in wheel group
+
+# Include this lines into /etc/sudoers by pasting them there
+# or by putting into /etc/sudoers.d and making sure that
+# dir gets sourced from sudoers.
+
+Cmnd_Alias      TEAMVIEWERD =  /usr/bin/teamviewer daemon start , /usr/bin/teamviewer daemon stop
+%wheel  ALL = NOPASSWD: TEAMVIEWERD
