@@ -1,0 +1,13 @@
+# Created by Gennady Uraltsev
+# Sample systemd service to power off a sata hard disk in an ultrabay
+# Put this into /etc/systemd/system/
+
+[Unit]
+Description=Power-off Sata Hard disk (in Ultrabay)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ultrabay_eject /dev/disk/by-id/ata-HITACHI_HTS727550A9E364_J3310081GRSUMA
+
+[Install]
+WantedBy=multi-user.target
